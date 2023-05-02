@@ -1,0 +1,18 @@
+#include <boost/asio.hpp>
+#include <string_view>
+
+int
+main(void) {
+  using namespace boost;
+  asio::io_context context{};
+
+  const auto server_addr{asio::ip::make_address("127.0.0.1")};
+  asio::ip::udp::endpoint endpoint{server_addr, 3333u};
+  asio::ip::udp::socket socket{context};
+
+  socket.connect(endpoint);
+
+  const std::string_view to_send{"Hello world!"};
+  auto send_buf{asio::buffer(to_send)};
+  socket.send(send_buf);
+}
