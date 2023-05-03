@@ -2,7 +2,7 @@
 #include <string_view>
 
 int
-main(void) {
+main(int nargs, char* args[]) {
   using namespace boost;
   asio::io_context context{};
 
@@ -12,7 +12,7 @@ main(void) {
 
   socket.connect(endpoint);
 
-  const std::string_view to_send{"Hello world!"};
+  const std::string_view to_send{args[1]};
   auto send_buf{asio::buffer(to_send)};
   socket.send(send_buf);
 }
