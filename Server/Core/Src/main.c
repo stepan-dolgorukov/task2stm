@@ -27,7 +27,10 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+struct command {
+	char light;
+	char mode;
+};
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -56,7 +59,8 @@ static void MX_GPIO_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_USB_OTG_FS_PCD_Init(void);
 /* USER CODE BEGIN PFP */
-
+struct command make_command(const char* rawcmd);
+void exec_command(const struct command* cmd);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -69,45 +73,41 @@ void onrecv(
 		u16_t port) {
 
 	char* data = p->payload;
-	char light = data[0];
-	char mode = data[1];
-
-	// LD1
-	if (light == '1') {
-		if (mode == '1') {
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
-		}
-
-		if (mode == '0') {
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
-		}
-	}
-
-	// LD2
-	if (light == '2') {
-		if (mode == '1') {
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET);
-			return;
-		}
-
-		if (mode == '0') {
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_RESET);
-		}
-	}
-
-	// LD3
-	if (light == '3') {
-		if (mode == '1') {
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);
-		}
-
-		if (mode == '0') {
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
-		}
-	}
+	const struct command cmd = make_command(data);
+	exec_command(&cmd);
 
 	pbuf_free(p);
 }
+
+struct command make_command(const char* rawcmd) {
+	const struct command cmd = {.light = rawcmd[0], .mode = rawcmd[1]};
+	return cmd;
+}
+
+void exec_command(const struct command* uc) {
+
+	if (uc->light != '1' && uc-> light != '2' && uc->light != '3') {
+		return;
+	}
+
+	if (uc->mode != '0' && uc->mode != '1') {
+		return;
+	}
+
+	switch (uc->light) {
+		case '1':
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, uc->mode == '1');
+			break;
+		case '2':
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, uc->mode == '1');
+			break;
+		case '3':
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, uc->mode == '1');
+		default:
+			return;
+	}
+}
+
 /* USER CODE END 0 */
 
 /**
