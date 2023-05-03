@@ -24,10 +24,10 @@ main(int nargs, char* args[]) {
 
   prop::options_description desc{};
   desc.add_options()
-    ("help", "Как пользоваться программой")
-    ("command", prop::value<std::string>(), "Команда серверу")
-    ("addr", prop::value<std::string>(), "IP-адрес сервера")
-    ("port", prop::value<std::uint16_t>(), "Порт")
+    ("help,h", "Как пользоваться программой")
+    ("command,c", prop::value<std::string>(), "Команда серверу")
+    ("addr,a", prop::value<std::string>(), "IP-адрес сервера")
+    ("port,p", prop::value<std::uint16_t>(), "Порт")
   ;
 
   prop::variables_map varmap;
