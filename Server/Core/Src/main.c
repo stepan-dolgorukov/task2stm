@@ -35,7 +35,18 @@ struct command {
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+enum LIGHT {
+	LIGHT_INVALID = 0,
+	LIGHT_GREEN = 1,
+	LIGHT_BLUE = 2,
+	LIGHT_RED = 3
+};
 
+enum MODE {
+	MODE_OFF = 0,
+	MODE_ON = 1,
+	MODE_INVALID = 2
+};
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -80,29 +91,46 @@ void onrecv(
 }
 
 struct command make_command(const char* rawcmd) {
-	const struct command cmd = {.light = rawcmd[0], .mode = rawcmd[1]};
+	char rawlight = rawcmd[0];
+	char rawmode = rawcmd[1];
+	struct command cmd = {};
+
+	if (rawlight != '1' && rawlight != '2' && rawlight != '3') {
+		cmd.light = LIGHT_INVALID;
+		cmd.mode = MODE_INVALID;
+		return cmd;
+	}
+
+	cmd.light = rawlight - '0';
+
+	if (rawmode != '0' && rawmode != '1') {
+		cmd.light = LIGHT_INVALID;
+		cmd.mode = MODE_INVALID;
+	}
+
+	cmd.mode = rawmode - '0';
 	return cmd;
 }
 
 void exec_command(const struct command* uc) {
 
-	if (uc->light != '1' && uc-> light != '2' && uc->light != '3') {
+	if (uc->light == LIGHT_INVALID) {
 		return;
 	}
 
-	if (uc->mode != '0' && uc->mode != '1') {
+	if (uc->mode == MODE_INVALID) {
 		return;
 	}
 
 	switch (uc->light) {
-		case '1':
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, uc->mode == '1');
+		case LIGHT_GREEN:
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, uc->mode == MODE_ON);
 			break;
-		case '2':
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, uc->mode == '1');
+		case LIGHT_BLUE:
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, uc->mode == MODE_ON);
 			break;
-		case '3':
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, uc->mode == '1');
+		case LIGHT_RED:
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, uc->mode == MODE_ON);
 		default:
 			return;
 	}
