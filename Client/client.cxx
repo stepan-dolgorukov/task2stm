@@ -2,6 +2,7 @@
 #include <boost/program_options.hpp>
 #include <iostream>
 #include <string_view>
+#include <exception>
 
 void show_how_to_use(void) {
   std::cout << "./client --command <command>" << '\n';
@@ -27,7 +28,16 @@ main(int nargs, char* args[]) {
   ;
 
   prop::variables_map varmap;
-  prop::store(prop::parse_command_line(nargs, args, desc), varmap);
+
+  try {
+    const auto parsed{prop::parse_command_line(nargs, args, desc)};
+    prop::store(parsed, varmap);
+
+  } catch (std::exception& exception) {
+    std::cout << exception.what() << '\n';
+    return 1;
+  }
+
   prop::notify(varmap);
 
   if (varmap.count("help")) {
