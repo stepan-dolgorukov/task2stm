@@ -4,17 +4,15 @@
 #include <string_view>
 #include <exception>
 
-void show_how_to_use(void) {
-  std::cout << "./client --command <command> --addr <address> --port <port>"
-            << '\n';
-  std::cout << R"(Доступные команды:
-* 11 — зажечь LD1
-* 10 — потушить LD1
-* 21 — зажечь LD2
-* 20 — потушить LD2
-* 31 — зажечь LD3
-* 30 — потушить LD3)"
-            << '\n';
+void
+show_available_commands(void) {
+  std::cout << "Доступные команды:" << '\n'
+            << "* 11 — зажечь LD1" << '\n'
+            << "* 10 — потушить LD1" << '\n'
+            << "* 21 — зажечь LD2" << '\n'
+            << "* 20 — потушить LD2" << '\n'
+            << "* 31 — зажечь LD3" << '\n'
+            << "* 30 — потушить LD3" << '\n';
 }
 
 int
