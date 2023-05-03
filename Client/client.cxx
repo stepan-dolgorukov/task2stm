@@ -3,6 +3,18 @@
 #include <iostream>
 #include <string_view>
 
+void show_how_to_use(void) {
+  std::cout << "./client --command <command>" << '\n';
+  std::cout << R"(Доступные команды:
+* 11 — зажечь LD1
+* 10 — потушить LD1
+* 21 — зажечь LD2
+* 20 — потушить LD2
+* 31 — зажечь LD3
+* 30 — потушить LD3)"
+            << '\n';
+}
+
 int
 main(int nargs, char* args[]) {
   using namespace boost;
@@ -19,17 +31,16 @@ main(int nargs, char* args[]) {
   prop::notify(varmap);
 
   if (varmap.count("help")) {
-    std::cout << "./client <command>" << std::endl;
+    show_how_to_use();
     return 0;
   }
 
   if (!varmap.count("command")) {
-    std::cout << "./client <command>" << std::endl;
+    show_how_to_use();
     return 0;
   }
 
   const std::string_view command{varmap["command"].as<std::string>()};
-
   asio::io_context context{};
 
   const auto server_addr{asio::ip::make_address("192.168.0.10")};
