@@ -42,12 +42,15 @@ main(int nargs, char* args[]) {
   prop::notify(varmap);
 
   if (varmap.count("help")) {
-    show_how_to_use();
+    std::cout << desc << std::endl;
+    show_available_commands();
     return 0;
   }
 
-  if (!varmap.count("command") || !varmap.count("addr") || !varmap.count ("port")) {
-    show_how_to_use();
+  if (!varmap.count("command") || !varmap.count("addr") ||
+      !varmap.count("port")) {
+    std::cout << desc << std::endl;
+    show_available_commands();
     return 0;
   }
 
