@@ -5,7 +5,8 @@
 #include <exception>
 
 void show_how_to_use(void) {
-  std::cout << "./client --command <command>" << '\n';
+  std::cout << "./client --command <command> --addr <address> --port <port>"
+            << '\n';
   std::cout << R"(Доступные команды:
 * 11 — зажечь LD1
 * 10 — потушить LD1
@@ -25,6 +26,8 @@ main(int nargs, char* args[]) {
   desc.add_options()
     ("help", "Как пользоваться программой")
     ("command", prop::value<std::string>(), "Команда серверу")
+    ("addr", prop::value<std::string>(), "IP-адрес сервера")
+    ("port", prop::value<std::uint16_t>(), "Порт")
   ;
 
   prop::variables_map varmap;
@@ -45,7 +48,7 @@ main(int nargs, char* args[]) {
     return 0;
   }
 
-  if (!varmap.count("command")) {
+  if (!varmap.count("command") || !varmap.count("addr") || !varmap.count ("port")) {
     show_how_to_use();
     return 0;
   }
@@ -53,8 +56,10 @@ main(int nargs, char* args[]) {
   const std::string_view command{varmap["command"].as<std::string>()};
   asio::io_context context{};
 
-  const auto server_addr{asio::ip::make_address("192.168.0.10")};
-  asio::ip::udp::endpoint endpoint{server_addr, 3333u};
+  const auto server_addr{
+      asio::ip::make_address(varmap["addr"].as<std::string>())};
+  asio::ip::udp::endpoint endpoint{server_addr,
+                                   varmap["port"].as<std::uint16_t>()};
   asio::ip::udp::socket socket{context};
 
   socket.connect(endpoint);
