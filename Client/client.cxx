@@ -51,7 +51,7 @@ main(int nargs, char* args[]) {
       !varmap.count("port")) {
     std::cout << desc << std::endl;
     show_available_commands();
-    return 0;
+    return 1;
   }
 
   const std::string_view command{varmap["command"].as<std::string>()};
