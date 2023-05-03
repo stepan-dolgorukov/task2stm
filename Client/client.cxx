@@ -1,9 +1,35 @@
 #include <boost/asio.hpp>
+#include <boost/program_options.hpp>
+#include <iostream>
 #include <string_view>
 
 int
 main(int nargs, char* args[]) {
   using namespace boost;
+  namespace prop = program_options;
+
+  prop::options_description desc{};
+  desc.add_options()
+    ("help", "Как пользоваться программой")
+    ("command", prop::value<std::string>(), "Команда серверу")
+  ;
+
+  prop::variables_map varmap;
+  prop::store(prop::parse_command_line(nargs, args, desc), varmap);
+  prop::notify(varmap);
+
+  if (varmap.count("help")) {
+    std::cout << "./client <command>" << std::endl;
+    return 0;
+  }
+
+  if (!varmap.count("command")) {
+    std::cout << "./client <command>" << std::endl;
+    return 0;
+  }
+
+  const std::string_view command{varmap["command"].as<std::string>()};
+
   asio::io_context context{};
 
   const auto server_addr{asio::ip::make_address("192.168.0.10")};
@@ -12,7 +38,6 @@ main(int nargs, char* args[]) {
 
   socket.connect(endpoint);
 
-  const std::string_view to_send{args[1]};
-  auto send_buf{asio::buffer(to_send)};
+  auto send_buf{asio::buffer(command)};
   socket.send(send_buf);
 }
