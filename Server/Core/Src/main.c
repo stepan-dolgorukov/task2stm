@@ -68,11 +68,45 @@ void onrecv(
 		const ip_addr_t *addr,
 		u16_t port) {
 
-	pbuf_free(p);
+	char* data = p->payload;
+	char light = data[0];
+	char mode = data[1];
 
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET);
-	HAL_Delay(250u);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_RESET);
+	// LD1
+	if (light == '1') {
+		if (mode == '1') {
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+		}
+
+		if (mode == '0') {
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+		}
+	}
+
+	// LD2
+	if (light == '2') {
+		if (mode == '1') {
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET);
+			return;
+		}
+
+		if (mode == '0') {
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_RESET);
+		}
+	}
+
+	// LD3
+	if (light == '3') {
+		if (mode == '1') {
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);
+		}
+
+		if (mode == '0') {
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
+		}
+	}
+
+	pbuf_free(p);
 }
 /* USER CODE END 0 */
 
