@@ -3,7 +3,9 @@
 Посылка команд на сервер. Сервер крутится на плате.
 
 ## Использование
-`./client <команда>`
+`./client --command <команда>`
+
+`./client --help`
 
 ## Доступне команды
 * 11 &ndash; зажечь LD1
@@ -14,4 +16,4 @@
 * 30 &ndash; потушить LD3
 
 ## Сборка
-`clang++ client.cxx -o client --std=c++17`
+`clang++ client.cxx -o client --std=c++17 -lboost_program_options`
